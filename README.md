@@ -1,3 +1,11 @@
+# Problems encountered 
+**Q: ERROR: Failed building wheel for tokenizers**
+
+**A:** From (https://github.com/neonbjb/tortoise-tts/issues/728)
+```
+conda install transformers==4.31.0
+```
+
 # StreetCrafter: Street View Synthesis with Controllable Video Diffusion Models
 
 ### [Project Page](https://zju3dv.github.io/street_crafter) | [Paper](https://arxiv.org/abs/2412.13188)
