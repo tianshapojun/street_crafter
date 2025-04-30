@@ -1,5 +1,9 @@
 1. script/colmap_waymo_full.py
 本地colmap输出相应替换
+相应命令
+colmap feature_extractor --ImageReader.mask_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/mask --ImageReader.camera_model SIMPLE_PINHOLE  --ImageReader.single_camera_per_folder 1 --database_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/database.db --image_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/train_imgs 
+colmap exhaustive_matcher --database_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/database.db
+colmap point_triangulator --database_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/database.db --image_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/train_imgs --input_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/created/sparse/model --output_path D:\Data\streetcrafter\waymo\waymo_val_049\colmap\triangulated\sparse --Mapper.ba_refine_focal_length 0 --Mapper.ba_refine_principal_point 0 --Mapper.max_extra_param 0 --clear_points 0 --Mapper.ba_global_max_num_iterations 30 --Mapper.filter_max_reproj_error 4 --Mapper.filter_min_tri_angle 0.5 --Mapper.tri_min_angle 0.5 --Mapper.tri_ignore_two_view_tracks 1 --Mapper.tri_complete_max_reproj_error 4 --Mapper.tri_continue_max_angle_error 4
 
 2. video_diffusion/vwm/modules/encoders/modules.py
 (本地下载上传) 264行 version = "video_diffusion/ckpts/open_clip_pytorch_model.bin"
