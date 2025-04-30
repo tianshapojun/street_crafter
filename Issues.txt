@@ -1,0 +1,21 @@
+1. script/colmap_waymo_full.py
+本地colmap输出相应替换
+
+2. video_diffusion/vwm/modules/encoders/modules.py
+(本地下载上传) 264行 version = "video_diffusion/ckpts/open_clip_pytorch_model.bin"
+
+3. street_crafter-main/street_gaussian/utils/novel_view_utils.py
+(waymo_novel_view_cameras) 更改主车轨迹
+
+4. street_gaussian/config/config.py
+cfg.gpus = [2] 更改gpu
+
+5. configs/waymo_val_121.yaml
+data: cameras 更改摄像头
+
+6. street_gaussian/utils/cfg_utils.py 
+cfg.trained_model_dir = os.path.join(cfg.model_path, 'trained_model')
+更改模型所在位置
+
+7. street_gaussian/utils/diffusion_utils.py
+(未实现) run函数，一次生成多视角
