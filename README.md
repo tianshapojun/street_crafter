@@ -1,7 +1,10 @@
 # Problems encountered 
-**Q: ERROR: Failed building wheel for tokenizers**
 
-**A:** From (https://github.com/neonbjb/tortoise-tts/issues/728)
+**A0: Please refer to [Issues](https://github.com/tianshapojun/street_crafter/blob/main/Issues.txt) about issues when running code.**
+
+**Q1: ERROR: Failed building wheel for tokenizers (in Colab)**
+
+**A1:** From (https://github.com/neonbjb/tortoise-tts/issues/728)
 ```
 conda install transformers==4.31.0
 ```
