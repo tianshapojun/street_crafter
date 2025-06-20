@@ -1,12 +1,8 @@
 1. script/colmap_waymo_full.py
-本地colmap输出相应替换
-相应命令
-colmap feature_extractor --ImageReader.mask_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/mask --ImageReader.camera_model SIMPLE_PINHOLE  --ImageReader.single_camera_per_folder 1 --database_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/database.db --image_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/train_imgs 
-colmap exhaustive_matcher --database_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/database.db
-colmap point_triangulator --database_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/database.db --image_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/train_imgs --input_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/created/sparse/model --output_path D:\Data\streetcrafter\waymo\waymo_val_049\colmap\triangulated\sparse --Mapper.ba_refine_focal_length 0 --Mapper.ba_refine_principal_point 0 --Mapper.max_extra_param 0 --clear_points 0 --Mapper.ba_global_max_num_iterations 30 --Mapper.filter_max_reproj_error 4 --Mapper.filter_min_tri_angle 0.5 --Mapper.tri_min_angle 0.5 --Mapper.tri_ignore_two_view_tracks 1 --Mapper.tri_complete_max_reproj_error 4 --Mapper.tri_continue_max_angle_error 4
+本地colmap输出
 
 2. video_diffusion/vwm/modules/encoders/modules.py
-(本地下载上传) 264行 version = "video_diffusion/ckpts/open_clip_pytorch_model.bin"
+(本地下载上传) 264行 version = "/root/Codes/street_crafter-main/video_diffusion/ckpts/open_clip_pytorch_model.bin"
 
 3. street_crafter-main/street_gaussian/utils/novel_view_utils.py
 (waymo_novel_view_cameras) 更改主车轨迹
@@ -23,3 +19,74 @@ cfg.trained_model_dir = os.path.join(cfg.model_path, 'trained_model')
 
 7. street_gaussian/utils/diffusion_utils.py
 (未实现) run函数，一次生成多视角
+
+8. colmap and run command
+colmap feature_extractor --ImageReader.mask_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/mask --ImageReader.camera_model SIMPLE_PINHOLE  --ImageReader.single_camera_per_folder 1 --database_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/database.db --image_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/train_imgs 
+
+colmap exhaustive_matcher --database_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/database.db
+
+colmap point_triangulator --database_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/database.db --image_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/train_imgs --input_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/created/sparse/model --output_path D:/Data/streetcrafter/waymo/waymo_val_049/colmap/triangulated/sparse/model --Mapper.ba_refine_focal_length 0 --Mapper.ba_refine_principal_point 0 --Mapper.max_extra_param 0 --clear_points 0 --Mapper.ba_global_max_num_iterations 30 --Mapper.filter_max_reproj_error 4 --Mapper.filter_min_tri_angle 0.5 --Mapper.tri_min_angle 0.5 --Mapper.tri_ignore_two_view_tracks 1 --Mapper.tri_complete_max_reproj_error 4 --Mapper.tri_continue_max_angle_error 4
+
+python train.py --config configs/waymo_val_049.yaml
+python render.py --config configs/waymo_val_049.yaml mode diffusion
+python render.py --config configs/waymo_val_049.yaml mode novel_view
+python render.py --config configs/waymo_val_049.yaml mode trajectory
+
+9. street_gaussian/models/street_gaussian_renderer.py
+123行  elif pc.include_sky_cubemap:
+替换为 elif pc.include_cube_map:
+
+10. street_gaussian/models/street_gaussian_model.py 
+function: parse_camera
+修改环境车轨迹
+
+11. street_gaussian/datasets/waymo_readers.py 
+(总体)更改内外参
+(novel view)更改内外参，street_crafter-main/street_gaussian/utils/novel_view_utils.py
+# # 0618 <
+# if cam == 0: 
+#     ext = np.array(
+#         [[ 5.68477868e-03,-5.63666773e-03,9.99967955e-01,1.70079119e+00],
+#         [-9.99983517e-01,-8.37115272e-04,5.68014846e-03,1.59456324e-02],
+#         [ 8.05071338e-04,-9.99983763e-01,-5.64133364e-03,1.51095764e+00],
+#         [ 0.00000000e+00,0.00000000e+00,0.00000000e+00,1.00000000e+00]]
+#         )
+# elif cam == 1:
+#     ext = np.array(
+#         [[ 8.20758348e-01,-3.41436671e-04,5.71275430e-01,1.52387798e+00],
+#         [-5.71271601e-01,3.21950185e-03,8.20754770e-01,4.94631337e-01],
+#         [-2.11945808e-03,-9.99994759e-01,2.44737995e-03,1.50932822e+00],
+#         [ 0.00000000e+00,0.00000000e+00,0.00000000e+00,1.00000000e+00]]
+#         )
+# elif cam == 2: 
+#     ext = np.array(
+#         [[-8.32929563e-01,-9.94603768e-06,5.53379023e-01,1.55084775e+00],
+#         [-5.53304927e-01,1.63788158e-02,-8.32817742e-01,-4.93404796e-01],
+#         [-9.05540984e-03,-9.99865858e-01,-1.36479031e-02,1.49574801e+00],
+#         [ 0.00000000e+00,0.00000000e+00,0.00000000e+00,1.00000000e+00]]
+#         )
+# c2w = ego_pose @ ext
+# RT = affine_inverse(c2w)
+# R = RT[:3, :3].T
+# T = RT[:3, 3]
+
+# width, height = 1600, 900 
+# ixt = np.array([[1.25281310e+03, 0.00000000e+00, 8.26588115e+02],
+#     [0.00000000e+00, 1.25281310e+03, 4.69984663e+02],
+#     [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+# fx, fy = ixt[0, 0], ixt[1, 1]
+# FovY = focal2fov(fy, height)
+# FovX = focal2fov(fx, width)
+# metadata['extrinsic'] = ext
+
+# novel_view_camera = novel_view_camera._replace(
+#     image_name=novel_view_image_name,  R=R, T=T, 
+#     FovY=FovY, FovX=FovX, K=ixt,
+#     width=width, height=height,
+#     guidance=dict(), metadata=metadata)
+# # 0618 >
+
+12. 修复器
+平移修复器：792,528
+参数变换修复器：1600，896
+trained_model_gs: 90000-平移，90000+参数改变
